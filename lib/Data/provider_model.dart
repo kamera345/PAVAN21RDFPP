@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ChangeColor extends ChangeNotifier{
-  Color color = Colors.black54;
+  Color color = Colors.orange;
 
   changeColors(Color colors){
 

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterassignment/Constants/constants.dart';
@@ -13,7 +15,7 @@ import '../Data/home_screen_roomcards_data.dart';
 * This is the home screen
 * In this the data is taken from the Data/
 * Constants are taken from the Constants/constants.dart file
-*
+* we have also used animation to rotate the circles in the background to 45 degrees
 * */
 
 
@@ -26,7 +28,35 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
+
+  late AnimationController controller;
+  late Animation<double> animation;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        seconds: 1,
+      ),
+    );
+
+    animation = Tween<double>(begin: 0, end: pi/4).animate(
+      controller,
+    );
+    controller.forward();
+
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +72,13 @@ class _HomePageState extends State<HomePage> {
             /*
                 * The below is the circles background image
             * */
-            SizedBox(
+            AnimatedBuilder(
+              animation: animation,
+              builder: (context, child)=>Transform.rotate(
+                angle: animation.value,
+                child: child,
+              ),
+              child: SizedBox(
                 width: double.infinity,
                 child: SvgPicture.asset(
                   'Assets/Circles.svg',
@@ -50,6 +86,7 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
               ),
+            ),
             Column(
               children: <Widget>[
                 SafeArea(
@@ -67,7 +104,6 @@ class _HomePageState extends State<HomePage> {
                             ),),
                           ],
                         ),
-
                         /*
                         * The below is the user image
                         * */
@@ -101,77 +137,79 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: const BorderRadius.only(topRight: Radius.circular(40.0), topLeft: Radius.circular(40.0)),
                       color: Colors.white.withOpacity(0.9),
                     ),
-                    child: ListView(
-                      scrollDirection: Axis.vertical,
-                      //crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0, left: 20.0, bottom: 20.0),
-                          child: Text('All Rooms', style:kHomeScreenSubHeadingTestStyle,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: ListView(
+                        scrollDirection: Axis.vertical,
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Padding(
+                            padding: EdgeInsets.only(left: 20.0, bottom: 20.0),
+                            child: Text('All Rooms', style:kHomeScreenSubHeadingTestStyle,
+                            ),
                           ),
-                        ),
 
-                        /*
-                        * The below grid view is to display the different types or rooms data
-                        * The data for those is taken from the Data/home_screen_roomcards_data.dart file
-                        * By clicking the room card user will redirect to the room screen
-                        *
-                        * */
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0,right: 20.0, top: 10.0),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 200,
-                                  mainAxisExtent: 180,
-                                  childAspectRatio: 3 / 2,
-                                  crossAxisSpacing: 20,
-                                  mainAxisSpacing: 20),
-                              itemCount: content.length,
-                              itemBuilder: (BuildContext context, index) {
-                                return GestureDetector(
-                                  onTap: (){
-                                   Navigator.pushNamed(context, RoomScreeen.name);
-                                  },
-                                  child: Container(
-                                    decoration:BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(30.0),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 30.0, left: 20.0),
-                                          child: SvgPicture.asset(
-                                            content[index]['icon'],
+                          /*
+                          * The below grid view is to display the different types or rooms data
+                          * The data for those is taken from the Data/home_screen_roomcards_data.dart file
+                          * By clicking the room card user will redirect to the room screen
+                          *
+                          * */
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0,right: 20.0, top: 10.0),
+                            child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemCount: content.length,
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 20.0,
+                                  mainAxisSpacing: 20.0,
+                                ),
+                                itemBuilder: (context ,index){
+                                  return GestureDetector(
+                                    onTap: (){
+                                      Navigator.pushNamed(context, RoomScreeen.name);
+                                    },
+                                    child: Container(
+                                      decoration:BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(30.0),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 20.0, left: 20.0),
+                                            child: SvgPicture.asset(
+                                              content[index]['icon'],
+                                            ),
                                           ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 35.0, left: 20.0),
-                                          child: Text(content[index]['text1'], style: const TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: 25.0,
-                                            fontWeight: FontWeight.w800,
-                                          ),),
-                                        ),
-                                         Padding(
-                                          padding: const EdgeInsets.only(top: 5.0, left: 20.0),
-                                          child: Text(content[index]['text2'], style: const TextStyle(
-                                            color: Colors.orangeAccent,
-                                            fontSize: 20.0,
-                                            fontWeight: FontWeight.w800,
-                                          ),),
-                                        ),
-                                      ],
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 25.0, left: 20.0),
+                                            child: Text(content[index]['text1'], style: const TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 25.0,
+                                              fontWeight: FontWeight.w800,
+                                            ),),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 1.0, left: 20.0),
+                                            child: Text(content[index]['text2'], style: const TextStyle(
+                                              color: Colors.orangeAccent,
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.w800,
+                                            ),),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
-                        ),
-                        const SizedBox(height: 80.0,),
-                      ],
+                                  );
+                            })
+                          ),
+                          const SizedBox(height: 80.0,),
+                        ],
+                      ),
                     ),
                   ),
                 ),
