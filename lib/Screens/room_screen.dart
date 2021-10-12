@@ -68,7 +68,7 @@ class _RoomScreeenState extends State<RoomScreeen>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
-        seconds: 1,
+        seconds: 2,
       ),
     );
 
@@ -196,45 +196,47 @@ class _RoomScreeenState extends State<RoomScreeen>
                       * To change the bulb color on user choice
                       * */
                     Consumer<ChangeColor>(builder: (context, value, child) {
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 2000),
-                        curve: Curves.easeInToLinear,
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 20.0),
+                      return Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: AnimatedContainer(
+                              duration: const Duration(
+                                seconds: 1
+                              ),
+                              curve: Curves.fastOutSlowIn,
                               child: SvgPicture.asset(
                                 'Assets/light bulb.svg',
                                 height: _height,
                                 color: brightness <= 100
                                     ? Colors.black54
                                     : value.color
-                                        .withOpacity(brightness * 0.001),
+                                    .withOpacity(brightness * 0.001),
                                 allowDrawingOutsideViewBox: true,
                               ),
                             ),
-                            /*
+                          ),
+                          /*
               * This is the svg used to cover up the first image of light which is on top
               * of the screen
               * */
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 2000),
-                                  curve: Curves.easeInToLinear,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 20.0),
-                                    child: SvgPicture.asset(
-                                      'Assets/Group 38.svg',
-                                      height: _height-48.0,
-                                    ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              AnimatedContainer(
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.fastOutSlowIn,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 20.0),
+                                  child: SvgPicture.asset(
+                                    'Assets/Group 38.svg',
+                                    height: _height-48.0,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       );
                     }),
                   ],
